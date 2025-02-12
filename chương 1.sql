@@ -38,7 +38,7 @@ WHERE PhongBan = 'IT';
 
 ---5. Tim nhan vien co do tuoi lon hon 25
 SELECT *  FROM NhanVien
-WHERE Tuoi &gt; 25;
+WHERE Tuoi > 25;
 
 ---6. Cho biet nhan vien lon tuoi nhat cua cac phong ban
 SELECT PhongBan, HoTen, Tuoi FROM NhanVien
