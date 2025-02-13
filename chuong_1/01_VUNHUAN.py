@@ -55,15 +55,12 @@ for o25 in over_25:
     print(o25)
     
 #6. Cho biết nhân viên lớn tuổi nhất của các PhongBan
-cursor.execute('''SELECT * FROM NhanVien
-               WHERE Tuoi IN (
-                   SELECT MAX(Tuoi)
+cursor.execute('''SELECT PhongBan, HoTen, MAX(Tuoi)
                    FROM NhanVien
                    GROUP BY PhongBan
-                   )
                    ''')
 nv_lon_tuoi = cursor.fetchall()
-print('\nNhân viên lớn tuổi nhất:')
+print('\nNhân viên lớn tuổi nhất của mỗi phòng ban:')
 for oldest in nv_lon_tuoi:
     print(oldest)
     
@@ -74,8 +71,11 @@ doi_phongban = cursor.fetchall()
 print('\nThông tin của nhân viên Le Van C sau khi thay đổi:')
 for change in doi_phongban:
     print(change)
+print('Như vậy, không có vấn đề gì gặp phải khi thực hiện chuyển đổi thông tin')
+print('''Tuy nhiên, thuộc tính của HoTen không unique nên có thể có trường hợp bị trùng tên Le Van C
+Vậy thì ta sẽ phải bổ sung thêm điều kiện MaNV = 3 để cập nhật chính xác nhân viên''')
 
-#8. Xóa nhân viên có “MaSV = 2” rồi cho biết mỗi phòng ban có bao nhiêu người
+#8. Xóa nhân viên có “MaNV = 2” rồi cho biết mỗi phòng ban có bao nhiêu người
 cursor.execute("DELETE FROM NhanVien WHERE MaNV = 2")
 cursor.execute("SELECT PhongBan, COUNT(*) FROM NhanVien GROUP BY PhongBan")
 so_nv_moi_phongban = cursor.fetchall()
