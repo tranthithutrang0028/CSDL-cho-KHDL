@@ -82,3 +82,5 @@ conn.commit()
 cursor.execute("SELECT PHONGBAN,COUNT(HOTEN) FROM NHANVIEN1 GROUP BY PHONGBAN")
 print(cursor.fetchall(), '\n')
 
+
+
