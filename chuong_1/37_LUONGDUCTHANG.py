@@ -81,6 +81,3 @@ cursor.execute("DELETE FROM NHANVIEN1 WHERE MANV = 2")
 conn.commit()
 cursor.execute("SELECT PHONGBAN,COUNT(HOTEN) FROM NHANVIEN1 GROUP BY PHONGBAN")
 print(cursor.fetchall(), '\n')
-
-
-
