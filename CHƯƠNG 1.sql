@@ -38,7 +38,7 @@ WHERE PhongBan = 'IT';
 
 ---5. Tim nhan vien co do tuoi lon hon 25
 SELECT * FROM NhanVien
-WHERE Tuoi > 25;
+WHERE Tuoi > 25 ;
 
 ---6. Cho biet nhan vien lon tuoi nhat cua cac phong ban
 SELECT PhongBan, HoTen, Tuoi FROM NhanVien
@@ -48,17 +48,61 @@ WHERE Tuoi IN (
     GROUP BY PhongBan
 );
 
----7. Chuyen doi thong tin PhongBan cua nhan vien &quot;Le Van C&quot; sang &quot;Marketing&quot;
+---7. Chuyển đổi thông tin PhongBan của nhân viên "Le Van C" sang "Marketing".
 UPDATE NhanVien
 SET PhongBan = 'Marketing'
 WHERE HoTen = 'Le Van C';
---- kiem tra
-SELECT * FROM NhanVien
-WHERE HoTen = 'Le Van C';
+---Vấn đề có thể gặp phải khi thực hiện cập nhật
+-----Trường hợp có nhiều nhân viên tên "Le Van C":
+-------Nếu trong bảng có nhiều nhân viên cùng tên "Le Van C", tất cả sẽ bị chuyển sang "Marketing", điều này có thể không chính xác.
+-----Trường hợp không có nhân viên nào tên "Le Van C":
+-------Nếu không có ai tên "Le Van C", lệnh UPDATE sẽ không thực hiện bất kỳ thay đổi nào, nhưng cũng không báo lỗi.
+---Giải quyếtquyết
+--Cách 1: Kiểm tra trước khi cập nhật
+---Trước khi thực hiện UPDATE, kiểm tra có bao nhiêu nhân viên tên "Le Van C".
+----Truy vấn kiểm tra số lượng nhân viên có tên "Le Van C"
+SELECT MaNV, HoTen, PhongBan FROM NhanVien WHERE HoTen = 'Le Van C';
+----TH1: Nếu chỉ có 1 nhân viên, chạy UPDATE như bình thường.
+----TH2: Nếu có nhiều người trùng tên, yêu cầu người dùng chọn MaNV cụ thể để cập nhật đúng người.
+----TH3: Nếu không có nhân viên nào, thông báo lỗi và không thực hiện UPDATE.
+---Cách 2: Cập nhật dựa trên MaNV để tránh nhầm lẫn
+-----Nếu có nhiều nhân viên tên "Le Van C", chỉ cập nhật nhân viên có MaNV cụ thể:
+UPDATE NhanVien 
+SET PhongBan = 'Marketing' 
+WHERE HoTen = 'Le Van C' AND MaNV = 3; 
 
----8. Xoa nhan vien co &quot;MaSV = 2&quot; roi cho biet moi phong ban co bao nhieu nguoi
+---8. Xóa nhân viên có "MaSV = 2" rồi cho biết mỗi phòng ban có bao nhiêu người
 DELETE FROM NhanVien
 WHERE MaNV = 2;
 ---Dem so nhan vien sau khi xoa
 SELECT PhongBan, COUNT(*) AS SoLuongNhanVien FROM NhanVien
 GROUP BY PhongBan;
+
+#9 Các bước kết nối đến SQLite trong Python
+import sqlite3
+# 1. Kết nối đến database
+conn = sqlite3.connect("nhanvien.db")
+cursor = conn.cursor()
+
+# 2. Tạo bảng nếu chưa có
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS NhanVien (
+    MaNV INT PRIMARY KEY,
+    HoTen VARCHAR(50),
+    Tuoi INT,
+    PhongBan VARCHAR(50))
+""")
+conn.commit()
+
+# 3. Chèn dữ liệu vào bảng
+cursor.execute("INSERT INTO NhanVien VALUES (9, 'Pham Van I', 33, 'Marketing')")
+conn.commit()                                  
+
+# 4. Truy vấn dữ liệu
+cursor.execute("SELECT * FROM NhanVien")
+rows = cursor.fetchall()
+for row in rows:
+    print(row)
+    
+# 5. Đóng kết nối
+conn.close()
